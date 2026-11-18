@@ -1,0 +1,38 @@
+# Builds the files that are sent to friends, for all three systems.
+# The results are attached to the run as "poher-linux-windows" and "poher-macos".
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  linux-windows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Linux
+        run: tools/build-release.sh linux
+      - name: Windows
+        run: tools/build-release.sh windows
+      - name: Check that the Linux files start
+        run: dist/poher-nettest-linux --help && dist/poher-linux/poher --version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: poher-linux-windows
+          path: dist/
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: brew list pkgconf >/dev/null 2>&1 || brew install pkgconf
+      - name: macOS
+        run: tools/build-release.sh macos
+      - name: Check that the files start
+        run: dist/poher-nettest-macos --help && dist/poher-macos/poher --version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: poher-macos
+          path: dist/

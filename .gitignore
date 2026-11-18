@@ -1,0 +1,5 @@
+/build*/
+/dist/
+*.profile
+*-report.txt
+__pycache__/
